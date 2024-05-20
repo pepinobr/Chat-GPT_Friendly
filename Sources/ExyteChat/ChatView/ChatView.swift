@@ -251,7 +251,7 @@ public struct ChatView<MessageContent: View, InputViewContent: View>: View {
             viewModel.didSendMessage = didSendMessage
             inputViewModel.didSendMessage = { value in
                 didSendMessage(value)
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                     NotificationCenter.default.post(name: .onScrollToBottom, object: nil)
                 }
             }
