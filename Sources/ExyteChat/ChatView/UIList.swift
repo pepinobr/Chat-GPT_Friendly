@@ -9,6 +9,7 @@ import SwiftUI
 
 public extension Notification.Name {
     static let onScrollToBottom = Notification.Name("onScrollToBottom")
+    static let onScrollToMostRecentMessage = Notification.Name("onScrollToMostRecentMessage")    
 }
 
 struct UIList<MessageContent: View>: UIViewRepresentable {
@@ -62,6 +63,14 @@ struct UIList<MessageContent: View>: UIViewRepresentable {
                 if let scrollView = tableView as? UIScrollView {
                     let bottomOffset = CGPoint(x: 0, y: 0)
                     scrollView.setContentOffset(bottomOffset, animated: true)
+                }
+            }
+        }
+        
+        NotificationCenter.default.addObserver(forName: .onScrollToMostRecentMessage, object: nil, queue: nil) { _ in
+            DispatchQueue.main.async {
+                if !context.coordinator.sections.isEmpty {
+                    tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .bottom, animated: true)
                 }
             }
         }
