@@ -31,7 +31,7 @@
 </table>
 
 <p><h1>Chat</h1></p>
-<p><h4>A SwiftUI Chat UI framework with fully customizable message cells and a built-in media picker</h4></p>
+<p><h4>A SwiftUI Chat UI framework with fully customizable message cells and a built-in media picker. This fork has improvements for better handling LLMs (ChatGPT) messages.</h4></p>
 
 ![](https://img.shields.io/github/v/tag/exyte/Chat?label=Version)
 [![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fexyte%2FChat%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/exyte/Chat)
