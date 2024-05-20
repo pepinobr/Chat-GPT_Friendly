@@ -166,7 +166,7 @@ struct UIList<MessageContent: View>: UIViewRepresentable {
                         applyOperation(operation, tableView: tableView)
                     }
                     tableView.endUpdates()
-
+                    NotificationCenter.default.post(name: .onScrollToMostRecentMessage, object: nil)
                     updateSemaphore.signal()
                 }
             } else {
