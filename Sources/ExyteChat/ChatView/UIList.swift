@@ -59,11 +59,13 @@ struct UIList<MessageContent: View>: UIViewRepresentable {
 
         NotificationCenter.default.addObserver(forName: .onScrollToBottom, object: nil, queue: nil) { _ in
             DispatchQueue.main.async {
-                if !context.coordinator.sections.isEmpty {
-                    tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .bottom, animated: true)
+                if let scrollView = tableView as? UIScrollView {
+                    let bottomOffset = CGPoint(x: 0, y: 0)
+                    scrollView.setContentOffset(bottomOffset, animated: true)
                 }
             }
         }
+    
 
         DispatchQueue.main.async {
             shouldScrollToTop = {
