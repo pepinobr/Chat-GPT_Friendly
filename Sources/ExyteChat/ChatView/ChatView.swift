@@ -107,7 +107,7 @@ public struct ChatView<MessageContent: View, InputViewContent: View>: View {
     public var body: some View {
         VStack {
             if !networkMonitor.isConnected {
-                waitingForNetwork
+                //waitingForNetwork
             }
 
             switch type {
