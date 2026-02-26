@@ -122,7 +122,10 @@ struct CommentsExampleView: View {
     func messageCell(_ message: Message, _ commentsPosition: CommentsPosition?, showMenuClosure: @escaping ()->(), actionClosure: @escaping (Message, DefaultMessageMenuAction) -> Void, attachmentClosure: @escaping (Attachment) -> Void) -> some View {
         VStack {
             HStack(alignment: .top, spacing: 12) {
-                CachedAsyncImage(url: message.user.avatarURL) { image in
+                CachedAsyncImage(
+                    url: message.user.avatarURL,
+                    cacheKey: message.user.avatarCacheKey
+                ) { image in
                     image
                         .resizable()
                         .scaledToFill()
@@ -150,7 +153,7 @@ struct CommentsExampleView: View {
                     if !message.attachments.isEmpty {
                         LazyVGrid(columns: Array(repeating: GridItem(), count: 2), spacing: 8) {
                             ForEach(message.attachments) { attachment in
-                                AttachmentCell(attachment: attachment, size: CGSize(width: 150, height: 150)) { _ in
+                                AttachmentCell(attachment: attachment, size: CGSize(width: 150, height: 150), showCancel: message.user.isCurrentUser) { _,_ in
                                     attachmentClosure(attachment)
                                 }
                                 .cornerRadius(12)
