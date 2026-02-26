@@ -44,6 +44,7 @@ struct UIList<MessageContent: View, InputView: View>: UIViewRepresentable {
     let sections: [MessagesSection]
     let ids: [String]
     let listSwipeActions: ListSwipeActions
+    let keyboardDismissMode: UIScrollView.KeyboardDismissMode
 
     @State var isScrolledToTop = false
     @State var updateQueue = UpdateQueue()
@@ -63,10 +64,12 @@ struct UIList<MessageContent: View, InputView: View>: UIViewRepresentable {
         tableView.backgroundColor = UIColor(theme.colors.mainBG)
         tableView.scrollsToTop = false
         tableView.isScrollEnabled = isScrollEnabled
+        tableView.keyboardDismissMode = keyboardDismissMode
 
         NotificationCenter.default.addObserver(forName: .onScrollToBottom, object: nil, queue: nil) { _ in
             DispatchQueue.main.async {
                 if !context.coordinator.sections.isEmpty {
+                    guard tableView.numberOfSections > 0, tableView.numberOfRows(inSection: 0) > 0 else { return }
                     tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .bottom, animated: true)
                 }
             }
@@ -371,7 +374,8 @@ struct UIList<MessageContent: View, InputView: View>: UIViewRepresentable {
             showMessageTimeView: showMessageTimeView,
             messageLinkPreviewLimit: messageLinkPreviewLimit, messageFont: messageFont,
             sections: sections, ids: ids, mainBackgroundColor: theme.colors.mainBG,
-            listSwipeActions: listSwipeActions)
+            listSwipeActions: listSwipeActions,
+            keyboardDismissMode: keyboardDismissMode)
     }
 
     class Coordinator: NSObject, UITableViewDataSource, UITableViewDelegate {
@@ -407,6 +411,7 @@ struct UIList<MessageContent: View, InputView: View>: UIViewRepresentable {
         let ids: [String]
         let mainBackgroundColor: Color
         let listSwipeActions: ListSwipeActions
+        let keyboardDismissMode: UIScrollView.KeyboardDismissMode
 
         private let impactGenerator = UIImpactFeedbackGenerator(style: .heavy)
 
@@ -421,7 +426,7 @@ struct UIList<MessageContent: View, InputView: View>: UIViewRepresentable {
             shouldShowLinkPreview: @escaping (URL) -> Bool, showMessageTimeView: Bool,
             messageLinkPreviewLimit: Int, messageFont: UIFont, sections: [MessagesSection],
             ids: [String], mainBackgroundColor: Color, paginationTargetIndexPath: IndexPath? = nil,
-            listSwipeActions: ListSwipeActions
+            listSwipeActions: ListSwipeActions, keyboardDismissMode: UIScrollView.KeyboardDismissMode
         ) {
             self.viewModel = viewModel
             self.inputViewModel = inputViewModel
@@ -446,6 +451,7 @@ struct UIList<MessageContent: View, InputView: View>: UIViewRepresentable {
             self.mainBackgroundColor = mainBackgroundColor
             self.paginationTargetIndexPath = paginationTargetIndexPath
             self.listSwipeActions = listSwipeActions
+            self.keyboardDismissMode = keyboardDismissMode
         }
 
         /// call pagination handler when this row is reached
