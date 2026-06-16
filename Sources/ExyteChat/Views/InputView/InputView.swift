@@ -81,10 +81,9 @@ struct InputView: View {
     var inputFieldId: UUID
     var style: InputViewStyle
     var availableInputs: [AvailableInputType]
-    var messageStyler: (String) -> AttributedString
     var recorderSettings: RecorderSettings = RecorderSettings()
     var localization: ChatLocalization
-    
+
     @StateObject var recordingPlayer = RecordingPlayer()
     
     private var onAction: (InputViewAction) -> Void {
@@ -109,6 +108,9 @@ struct InputView: View {
     var body: some View {
         VStack {
             viewOnTop
+                .padding(.top, 6)
+                .transition(.move(edge: .bottom))
+
             HStack(alignment: .bottom, spacing: 10) {
                 HStack(alignment: .bottom, spacing: 0) {
                     leftView
@@ -157,9 +159,7 @@ struct InputView: View {
             }
         }
     }
-    
-    
-    
+
     @ViewBuilder
     var middleView: some View {
         Group {
@@ -286,8 +286,8 @@ struct InputView: View {
                         Text(localization.replyToText + " " + message.user.name)
                             .font(.caption2)
                             .foregroundColor(theme.colors.mainCaptionText)
-                        if !message.text.isEmpty {
-                            textView(message.text)
+                        if !message.attributedText.characters.isEmpty {
+                            Text(message.attributedText)
                                 .font(.caption2)
                                 .lineLimit(1)
                                 .foregroundColor(theme.colors.mainText)
@@ -312,18 +312,15 @@ struct InputView: View {
                     
                     theme.images.reply.cancelReply
                         .onTapGesture {
-                            viewModel.attachments.replyMessage = nil
+                            withAnimation(.easeInOut(duration: 0.2)) {
+                                viewModel.attachments.replyMessage = nil
+                            }
                         }
                 }
                 .padding(.horizontal, 26)
             }
             .fixedSize(horizontal: false, vertical: true)
         }
-    }
-    
-    @ViewBuilder
-    func textView(_ text: String) -> some View {
-        Text(text.styled(using: messageStyler))
     }
     
     var attachButton: some View {
@@ -503,7 +500,7 @@ struct InputView: View {
     
     @ViewBuilder
     var recordWaveform: some View {
-        if let samples = viewModel.attachments.recording?.waveformSamples {
+        if let recording = viewModel.attachments.recording {
             HStack(spacing: 8) {
                 Group {
                     if state == .hasRecording || state == .pausedRecording {
@@ -514,9 +511,9 @@ struct InputView: View {
                 }
                 .frame(width: 20)
                 
-                RecordWaveformPlaying(samples: samples, progress: recordingPlayer.progress, color: theme.colors.mainText, addExtraDots: true) { progress in
+                RecordWaveformPlaying(samples: recording.waveformSamples, progress: recordingPlayer.progress, color: theme.colors.mainText, addExtraDots: true) { progress in
                     Task {
-                        await recordingPlayer.seek(with: viewModel.attachments.recording!, to: progress)
+                        await recordingPlayer.seek(with: recording, to: progress)
                     }
                 }
             }
@@ -527,7 +524,7 @@ struct InputView: View {
     var backgroundColor: Color {
         switch style {
         case .message:
-            return theme.colors.mainBG
+            return theme.contentBG
         case .signature:
             return pickerTheme.main.pickerBackground
         }
